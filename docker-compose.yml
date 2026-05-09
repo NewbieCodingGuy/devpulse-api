@@ -1,0 +1,22 @@
+services:
+  mysql:
+    image: mysql:8
+    container_name: devpulse_mysql
+    ports:
+      - "3307:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: rootpassword
+      MYSQL_DATABASE: devpulse_db
+      MYSQL_USER: devpulse_user
+      MYSQL_PASSWORD: devpulse_pass
+    volumes:
+      - mysql_data:/var/lib/mysql
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  mysql_data:
