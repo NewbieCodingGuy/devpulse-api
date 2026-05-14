@@ -59,7 +59,7 @@ export const login = async ({
   const user = await UserRepository.findByEmail(email);
 
   if (!user) {
-    throw new AppError("User does not exists", 401);
+    throw new AppError("Invalid credentials", 401);
   }
 
   const passwordMatch = await bcrypt.compare(password, user.password);
