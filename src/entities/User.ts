@@ -5,7 +5,9 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   Index,
+  OneToMany,
 } from "typeorm";
+import { Session } from "./Session";
 
 export enum UserPlan {
   FREE = "free",
@@ -38,6 +40,9 @@ export class User {
     type: "boolean",
   })
   isVerified!: boolean;
+
+  @OneToMany(() => Session, (session) => session.user)
+  sessions!: Session[];
 
   @CreateDateColumn()
   createdAt!: Date;
