@@ -20,7 +20,7 @@ export class Session {
   @JoinColumn({ name: "userId" })
   user!: User;
 
-  @Column()
+  @Column({ type: "varchar", length: 36 })
   userId!: string;
 
   @Column({ length: 150 })

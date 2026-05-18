@@ -3,20 +3,12 @@ import { User } from "../../entities/User";
 import { Session } from "../../entities/Session";
 
 export const SessionRepository = {
-  async findById(id: string): Promise<User | null> {
-    return AppDataSource.getRepository(User).findOne({
-      where: {
-        id,
-      },
-    });
-  },
-
   async createSession(data: {
     userId: string;
     title: string;
     startTime: Date;
     endTime: Date | null;
-    durationMin: number | null;
+    duration: number | null;
     language: string;
     notes: string | null;
   }): Promise<Session> {
@@ -24,5 +16,30 @@ export const SessionRepository = {
     const session = repo.create(data);
 
     return repo.save(session);
+  },
+
+  async findSessionsByUserId(userId: string): Promise<Session[] | null> {
+    return AppDataSource.getRepository(Session).find({
+      where: {
+        userId,
+      },
+    });
+  },
+
+  async findByIdAndUserId(
+    sessionId: string,
+    userId: string,
+  ): Promise<Session | null> {
+    return AppDataSource.getRepository(Session).findOne({
+      where: { id: sessionId, userId },
+    });
+  },
+
+  async updateSession(session: Session): Promise<Session> {
+    return AppDataSource.getRepository(Session).save(session);
+  },
+
+  async deleteSession(session: Session): Promise<void> {
+    await AppDataSource.getRepository(Session).remove(session);
   },
 };
