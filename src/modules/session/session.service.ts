@@ -44,14 +44,43 @@ export const createSession = async ({
 
 export const getAllSession = async ({
   userId,
+  page,
+  limit,
 }: {
   userId: string;
-}): Promise<{ allSessions: UserSession[] }> => {
-  const sessions = await SessionRepository.findSessionsByUserId(userId);
+  page: number;
+  limit: number;
+}): Promise<{
+  allSessions: UserSession[];
+  pagination: {
+    total: number;
+    page: number;
+    limit: number;
+    totalPages: number;
+    hasNext: boolean;
+    hasPrev: boolean;
+  };
+}> => {
+  const safePage = Math.max(page, 1);
+  const safeLimit = Math.min(Math.max(limit, 1), 100);
+
+  const { sessions, total } = await SessionRepository.findSessionsByUserId(
+    userId,
+    safePage,
+    safeLimit,
+  );
 
   if (sessions === null || sessions === undefined || sessions.length === 0) {
     return {
       allSessions: [],
+      pagination: {
+        total: 0,
+        page: 0,
+        limit: 0,
+        totalPages: 0,
+        hasNext: false,
+        hasPrev: false,
+      },
     };
   }
 
@@ -66,8 +95,20 @@ export const getAllSession = async ({
     notes: session.notes,
   }));
 
+  const totalPages = Math.ceil(total / safeLimit);
+  const hasNext = safePage < totalPages;
+  const hasPrev = safePage > 1;
+
   return {
     allSessions: _allSessions,
+    pagination: {
+      total,
+      page: safePage,
+      limit: safeLimit,
+      totalPages,
+      hasNext,
+      hasPrev,
+    },
   };
 };
 

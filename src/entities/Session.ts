@@ -23,22 +23,22 @@ export class Session {
   @Column({ type: "varchar", length: 36 })
   userId!: string;
 
-  @Column({ length: 150 })
+  @Column({ type: "varchar", length: 150 })
   title!: string;
 
-  @Column()
+  @Column({ type: "timestamp" })
   startTime!: Date;
 
-  @Column({ nullable: true })
+  @Column({ type: "timestamp", nullable: true })
   endTime!: Date | null;
 
-  @Column({ nullable: true })
+  @Column({ type: "int", nullable: true })
   duration!: number | null;
 
-  @Column()
+  @Column({ type: "varchar" })
   language!: string;
 
-  @Column({ nullable: true })
+  @Column({ type: "text", nullable: true })
   notes!: string | null;
 
   @CreateDateColumn()

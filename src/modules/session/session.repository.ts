@@ -18,12 +18,20 @@ export const SessionRepository = {
     return repo.save(session);
   },
 
-  async findSessionsByUserId(userId: string): Promise<Session[] | null> {
-    return AppDataSource.getRepository(Session).find({
-      where: {
-        userId,
-      },
+  async findSessionsByUserId(
+    userId: string,
+    page: number,
+    limit: number,
+  ): Promise<{ sessions: Session[]; total: number }> {
+    const [sessions, total] = await AppDataSource.getRepository(
+      Session,
+    ).findAndCount({
+      where: { userId },
+      order: { createdAt: "DESC" },
+      skip: (page - 1) * limit,
+      take: limit,
     });
+    return { sessions, total };
   },
 
   async findByIdAndUserId(

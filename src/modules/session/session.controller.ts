@@ -39,12 +39,17 @@ export const getUserSessions = async (
 ) => {
   try {
     const userId = req.user?.id;
+    const page = Math.max(1, parseInt(req.query.page as string) || 1);
+    const limit = Math.min(
+      100,
+      Math.max(1, parseInt(req.query.limit as string) || 20),
+    );
 
     if (!userId) {
       throw new AppError("Unauthorized", 401);
     }
 
-    const result = await getAllSession({ userId });
+    const result = await getAllSession({ userId, page, limit });
 
     res.status(200).json({
       success: true,
