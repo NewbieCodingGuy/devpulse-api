@@ -11,6 +11,7 @@ interface Config {
   dbUser: string;
   dbPassword: string;
   dbName: string;
+  redisUrl: string;
 }
 
 const config: Config = {
@@ -22,6 +23,7 @@ const config: Config = {
   dbUser: requireEnv("DB_USER"),
   dbPassword: requireEnv("DB_PASSWORD"),
   dbName: requireEnv("DB_NAME"),
+  redisUrl: requireEnv("REDIS_URL"),
 };
 
 function requireEnv(key: string): string {

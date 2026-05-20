@@ -1,6 +1,7 @@
 import { SessionRepository } from "./session.repository";
 import { AppError } from "../../utils/AppError";
-import { UserSession } from "../../types/session.types";
+import { UserSession, SessionListResult } from "../../types/session.types";
+import { cache } from "../../utils/cache";
 
 export const createSession = async ({
   userId,
@@ -37,6 +38,14 @@ export const createSession = async ({
     notes: session.notes,
   };
 
+  //Invalidate caching
+  try {
+    await cache.deletePattern(`sessions:${userId}:*`);
+    console.log("Cache Deleting");
+  } catch (error) {
+    console.log("Cache deletion failed : ", error);
+  }
+
   return {
     userSession: uSession,
   };
@@ -64,25 +73,21 @@ export const getAllSession = async ({
   const safePage = Math.max(page, 1);
   const safeLimit = Math.min(Math.max(limit, 1), 100);
 
+  const cacheKey = `sessions:${userId}:page:${safePage}:limit:${safeLimit}`;
+
+  try {
+    const cached = await cache.get<SessionListResult>(cacheKey);
+    console.log("Cache hitting!");
+    if (cached) return cached;
+  } catch (error) {
+    console.log("Caching read failed ", error);
+  }
+
   const { sessions, total } = await SessionRepository.findSessionsByUserId(
     userId,
     safePage,
     safeLimit,
   );
-
-  if (sessions === null || sessions === undefined || sessions.length === 0) {
-    return {
-      allSessions: [],
-      pagination: {
-        total: 0,
-        page: 0,
-        limit: 0,
-        totalPages: 0,
-        hasNext: false,
-        hasPrev: false,
-      },
-    };
-  }
 
   const _allSessions: UserSession[] = sessions.map((session) => ({
     id: session.id,
@@ -99,7 +104,7 @@ export const getAllSession = async ({
   const hasNext = safePage < totalPages;
   const hasPrev = safePage > 1;
 
-  return {
+  const result = {
     allSessions: _allSessions,
     pagination: {
       total,
@@ -110,6 +115,15 @@ export const getAllSession = async ({
       hasPrev,
     },
   };
+
+  try {
+    await cache.set(cacheKey, result, 300);
+    console.log("Cache writing");
+  } catch (error) {
+    console.log("Cache write failed ", error);
+  }
+
+  return result;
 };
 
 export const getSessionByID = async ({
@@ -119,6 +133,16 @@ export const getSessionByID = async ({
   userId: string;
   sessionId: string;
 }): Promise<{ sessionData: UserSession }> => {
+  const cacheKey = `sessions:${userId}:${sessionId}`;
+
+  try {
+    const cached = await cache.get<{ sessionData: UserSession }>(cacheKey);
+    console.log("Cache reading");
+    if (cached) return cached;
+  } catch (error) {
+    console.log("Cache read failed : ", error);
+  }
+
   const session = await SessionRepository.findByIdAndUserId(sessionId, userId);
 
   if (!session) {
@@ -135,6 +159,14 @@ export const getSessionByID = async ({
     language: session.language,
     notes: session.notes,
   };
+
+  const returnValue = { sessionData: _session };
+  try {
+    await cache.set(cacheKey, returnValue, 300);
+    console.log("Cache writing");
+  } catch (error) {
+    console.log("Cache Writing Failed ", error);
+  }
 
   return {
     sessionData: _session,
@@ -200,6 +232,13 @@ export const updateSession = async ({
     notes: updatedSession.notes,
   };
 
+  try {
+    await cache.deletePattern(`sessions:${userId}:*`);
+    console.log("Cache Deleting");
+  } catch (error) {
+    console.log("Cache Deletion failed ", error);
+  }
+
   return {
     sessionData,
   };
@@ -219,4 +258,11 @@ export const deleteSession = async ({
   }
 
   await SessionRepository.deleteSession(session);
+
+  try {
+    await cache.deletePattern(`sessions:${userId}:*`);
+    console.log("Cache Deleting");
+  } catch (error) {
+    console.log("Cache Deletion Failed ", error);
+  }
 };
