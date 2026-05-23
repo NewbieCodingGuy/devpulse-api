@@ -2,6 +2,8 @@ import { SessionRepository } from "./session.repository";
 import { AppError } from "../../utils/AppError";
 import { UserSession, SessionListResult } from "../../types/session.types";
 import { cache } from "../../utils/cache";
+import { sessionQueue } from "../../queues/session.queue";
+import { tryCatch } from "bullmq";
 
 export const createSession = async ({
   userId,
@@ -231,6 +233,30 @@ export const updateSession = async ({
     language: updatedSession.language,
     notes: updatedSession.notes,
   };
+
+  if (endTime !== null && endTime !== undefined) {
+    try {
+      await sessionQueue.add(
+        "session-ended",
+        {
+          sessionId: updatedSession.id,
+          userId: updatedSession.userId,
+          title: updatedSession.title,
+          duration: updatedSession.duration,
+          language: updatedSession.language,
+        },
+        {
+          attempts: 5,
+          backoff: {
+            type: "exponential",
+            delay: 2000,
+          },
+        },
+      );
+    } catch (error) {
+      console.error("Failed to queue session-ended job:", error);
+    }
+  }
 
   try {
     await cache.deletePattern(`sessions:${userId}:*`);

@@ -2,6 +2,7 @@ import "reflect-metadata";
 import app from "./app";
 import config from "./config/env";
 import { AppDataSource } from "./config/database";
+import "./workers/session.worker";
 
 async function startServer() {
   try {
