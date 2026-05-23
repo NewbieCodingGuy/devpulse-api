@@ -50,4 +50,11 @@ export const SessionRepository = {
   async deleteSession(session: Session): Promise<void> {
     await AppDataSource.getRepository(Session).remove(session);
   },
+
+  async updateAiSummary(sessionId: string, summary: string): Promise<void> {
+    await AppDataSource.getRepository(Session).update(
+      { id: sessionId },
+      { aiSummary: summary },
+    );
+  },
 };
