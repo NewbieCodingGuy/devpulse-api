@@ -3,10 +3,12 @@ import { userRoutes } from "./modules/user/user.routes";
 import { errorHandler } from "./middlewares/errorHandler";
 import { sessionRoutes } from "./modules/session/session.routes";
 import { globalLimiter } from "./middlewares/rateLimiter";
+import helmet from "helmet";
 
 const app = express();
 app.use(express.json());
 app.use(globalLimiter);
+app.use(helmet());
 
 // routes
 app.use("/api/auth", userRoutes);
