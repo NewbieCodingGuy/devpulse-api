@@ -1,4 +1,23 @@
 services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+
+    container_name: devpulse_app
+    ports:
+      - "3000:3000"
+
+    restart: unless-stopped
+
+    depends_on:
+      mysql:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+
+    env_file:
+      - .env
   mysql:
     image: mysql:8
     container_name: devpulse_mysql

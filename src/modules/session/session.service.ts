@@ -38,6 +38,7 @@ export const createSession = async ({
     language: session.language,
     title: session.title,
     notes: session.notes,
+    aiSummary: session.aiSummary,
   };
 
   //Invalidate caching
@@ -100,6 +101,7 @@ export const getAllSession = async ({
     durationMin: session.duration,
     language: session.language,
     notes: session.notes,
+    aiSummary: session.aiSummary,
   }));
 
   const totalPages = Math.ceil(total / safeLimit);
@@ -160,6 +162,7 @@ export const getSessionByID = async ({
     durationMin: session.duration,
     language: session.language,
     notes: session.notes,
+    aiSummary: session.aiSummary,
   };
 
   const returnValue = { sessionData: _session };
@@ -232,6 +235,7 @@ export const updateSession = async ({
     durationMin: updatedSession.duration,
     language: updatedSession.language,
     notes: updatedSession.notes,
+    aiSummary: updatedSession.aiSummary,
   };
 
   if (endTime !== null && endTime !== undefined) {
