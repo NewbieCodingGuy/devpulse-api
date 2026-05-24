@@ -2,7 +2,7 @@ import { Worker } from "bullmq";
 import { redis } from "../config/redis";
 import { generateSessionSummary } from "../services/openai.service";
 import { SessionRepository } from "../modules/session/session.repository";
-import { AppError } from "../utils/AppError";
+import { getIO } from "../config/socket";
 
 export const sessionWorker = new Worker(
   "session-jobs",
@@ -16,6 +16,12 @@ export const sessionWorker = new Worker(
         job.data.sessionId,
         summaryResult,
       );
+
+      const io = getIO();
+      io.to(job.data.userId).emit("session:summary-ready", {
+        sessionId: job.data.sessionId,
+        aiSummary: summaryResult,
+      });
     }
   },
   {
