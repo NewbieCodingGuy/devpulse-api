@@ -4,11 +4,15 @@ import { errorHandler } from "./middlewares/errorHandler";
 import { sessionRoutes } from "./modules/session/session.routes";
 import { globalLimiter } from "./middlewares/rateLimiter";
 import helmet from "helmet";
+import morgan from "morgan";
 
 const app = express();
+app.use(helmet());
+
+app.use(morgan(process.env.NODE_ENV === "production" ? "combined" : "dev"));
+
 app.use(express.json());
 app.use(globalLimiter);
-app.use(helmet());
 
 // routes
 app.use("/api/auth", userRoutes);

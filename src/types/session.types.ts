@@ -7,6 +7,7 @@ export interface UserSession {
   durationMin: number | null;
   language: string;
   notes: string | null;
+  aiSummary: string | null;
 }
 
 export interface SessionListResult {
