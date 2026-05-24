@@ -244,6 +244,7 @@ export const updateSession = async ({
           title: updatedSession.title,
           duration: updatedSession.duration,
           language: updatedSession.language,
+          notes: updatedSession.notes,
         },
         {
           attempts: 5,

@@ -41,6 +41,9 @@ export class Session {
   @Column({ type: "text", nullable: true })
   notes!: string | null;
 
+  @Column({ nullable: true, type: "text" })
+  aiSummary!: string | null;
+
   @CreateDateColumn()
   createdAt!: Date;
 
