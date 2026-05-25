@@ -11,6 +11,9 @@ async function startServer() {
     await AppDataSource.initialize();
     console.log("Database connected");
 
+    await AppDataSource.runMigrations();
+    console.log("Migrations executed");
+
     const httpServer = createServer(app);
     initializeSocket(httpServer);
 
