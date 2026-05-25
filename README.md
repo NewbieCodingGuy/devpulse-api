@@ -171,7 +171,7 @@ devpulse-api/
 **1. Clone and install:**
 
 ```bash
-git clone https://github.com/your-username/devpulse-api.git
+git clone https://github.com/NewbieCodingGuy/devpulse-api.git
 cd devpulse-api
 npm install
 ```
