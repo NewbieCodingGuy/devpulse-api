@@ -2,13 +2,22 @@ import "reflect-metadata";
 import app from "./app";
 import config from "./config/env";
 import { AppDataSource } from "./config/database";
+import "./workers/session.worker";
+import { createServer } from "http";
+import { initializeSocket } from "./config/socket";
 
 async function startServer() {
   try {
     await AppDataSource.initialize();
     console.log("Database connected");
 
-    app
+    await AppDataSource.runMigrations();
+    console.log("Migrations executed");
+
+    const httpServer = createServer(app);
+    initializeSocket(httpServer);
+
+    httpServer
       .listen(config.port, () => {
         console.log(`Server running on port ${config.port}`);
       })

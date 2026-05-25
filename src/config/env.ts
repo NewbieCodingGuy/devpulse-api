@@ -11,6 +11,8 @@ interface Config {
   dbUser: string;
   dbPassword: string;
   dbName: string;
+  redisUrl: string;
+  openaiKey: string;
 }
 
 const config: Config = {
@@ -22,6 +24,8 @@ const config: Config = {
   dbUser: requireEnv("DB_USER"),
   dbPassword: requireEnv("DB_PASSWORD"),
   dbName: requireEnv("DB_NAME"),
+  redisUrl: requireEnv("REDIS_URL"),
+  openaiKey: requireEnv("OPENAI_API_KEY"),
 };
 
 function requireEnv(key: string): string {
