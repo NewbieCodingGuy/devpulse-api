@@ -1,8 +1,8 @@
 import { DataSource } from "typeorm";
 import config from "./env"; // adjust import as needed
 
-// const isCompiled = __filename.endsWith(".js");
-const isCompiled = process.env.NODE_ENV === "production";
+const isCompiled = __filename.endsWith(".js");
+//const isCompiled = process.env.NODE_ENV === "production";
 // const isCompiled = __filename.endsWith(".js");
 const entityPath = isCompiled
   ? "dist/entities/**/*.js"
@@ -25,7 +25,7 @@ export const AppDataSource = new DataSource({
   extra: {
     connectionLimit: 10,
     waitForConnections: true,
-    acquireTimeout: 30000,
+    //acquireTimeout: 30000,
     idleTimeout: 60000,
   },
 });
