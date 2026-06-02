@@ -5,7 +5,7 @@ import { cleanDatabase } from "./cleanup";
 
 describe("Auth", () => {
   beforeEach(async () => {
-    //await cleanDatabase();
+    await cleanDatabase();
   });
 
   describe("POST /register", () => {

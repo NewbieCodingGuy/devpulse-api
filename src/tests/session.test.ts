@@ -36,7 +36,7 @@ describe("Session", () => {
   let token: string;
 
   beforeEach(async () => {
-    //await cleanDatabase();
+    await cleanDatabase();
     token = await getToken();
   });
 
